@@ -27,3 +27,7 @@ export function loadHabitablePlanet() {
       .on("end", resolve);
   });
 }
+
+export function getAllHabitablePlanets() {
+  return habitablePlanets;
+}

@@ -1,18 +1,27 @@
+import { createSounds } from "arwes";
+
 const baseURL = "http://localhost:8000";
 
 export async function httpGetPlanets() {
   try {
-    const response = await fetch(baseURL + "/planets");
-    if (response.status !== 200) throw new Error("Fail to fetch data!");
-    return await response.json();
+    const res = await fetch(baseURL + "/planets");
+    if (res.status !== 200) throw new Error("Fail to fetch Planets!");
+    return await res.json();
   } catch (error) {
     console.log(error);
   }
 }
 
 export async function httpGetLaunches() {
-  // TODO: Once API is ready.
-  // Load launches, sort by flight number, and return as JSON.
+  try {
+    const res = await fetch(baseURL + "/launches");
+    if (res.status !== 200) throw new Error("Fail to fetch Launches!");
+    const data = await res.json();
+    console.log(data);
+    return data.sort((a, b) => a.flightNumber - b.flightNumber);
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 export async function httpSubmitLaunch(launch) {
