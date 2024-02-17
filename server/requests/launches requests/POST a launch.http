@@ -1,0 +1,11 @@
+#### POST A LAUNCH
+
+POST http://localhost:8000/launches
+Content-Type: application/json
+
+{
+  "mission": "Kepler Exploration X",
+  "rocket": "WORLD",
+  "destination": "Kepler-442 a",
+  "launchDate": "March 20, 2030"
+}

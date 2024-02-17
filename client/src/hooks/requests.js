@@ -25,11 +25,32 @@ export async function httpGetLaunches() {
 }
 
 export async function httpSubmitLaunch(launch) {
-  // TODO: Once API is ready.
-  // Submit given launch data to launch system.
+  try {
+    const res = await fetch(baseURL + "/launches", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(launch),
+    });
+    const data = await res.json();
+    if (res.status === 400) throw new Error(data.error);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false };
+  }
 }
 
 export async function httpAbortLaunch(id) {
-  // TODO: Once API is ready.
-  // Delete launch with given ID.
+  console.log(id);
+  try {
+    const res = await fetch(baseURL + "/launches/" + id, {
+      method: "DELETE",
+    });
+    const data = await res.json();
+    if (res.status === 400) throw new Error(data.error);
+    return { ok: true };
+  } catch (error) {
+    return { ok: false };
+  }
 }
