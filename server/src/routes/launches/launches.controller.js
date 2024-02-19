@@ -1,15 +1,16 @@
 import {
   abortLaunch,
   addNewLaunch,
-  existsLaunchWIthId,
+  existsLaunchWithId,
   getAllLaunches,
 } from "../../models/launches.model.js";
+import { existsPlanetWithName } from "../../models/planets.model.js";
 
-export function httpGetAllLaunches(req, res) {
-  return res.status(200).json(getAllLaunches());
+export async function httpGetAllLaunches(req, res) {
+  return res.status(200).json(await getAllLaunches());
 }
 
-export function httpPostNewLaunch(req, res) {
+export async function httpAddNewLaunch(req, res) {
   const launch = req.body;
   if (
     !launch.mission ||
@@ -19,17 +20,28 @@ export function httpPostNewLaunch(req, res) {
   )
     return res.status(400).json({ error: "Missing required field" });
 
+  if (!(await existsPlanetWithName(launch.destination)))
+    return res.status(400).json({ error: "Invade Planet Name" });
+
   launch.launchDate = new Date(launch.launchDate);
 
   if (isNaN(launch.launchDate))
     return res.status(400).json({ error: "Invade Date" });
 
-  return res.status(201).json(addNewLaunch(launch));
+  const resLaunch = await addNewLaunch(launch);
+  return res
+    .status(resLaunch ? 201 : 400)
+    .json(resLaunch || { error: "Couldn't create Launch" });
 }
 
-export function httpAbortLaunch(req, res) {
+export async function httpAbortLaunch(req, res) {
   const launchId = Number(req.params.launchId);
-  if (!existsLaunchWIthId(launchId))
+
+  if (!(await existsLaunchWithId(launchId)))
     return res.status(404).json({ error: "No launch found" });
-  return res.status(200).json(abortLaunch(launchId));
+
+  const abort = await abortLaunch(launchId);
+  return res
+    .status(abort ? 200 : 400)
+    .json(abort || { error: "Couldn't abort launch" });
 }

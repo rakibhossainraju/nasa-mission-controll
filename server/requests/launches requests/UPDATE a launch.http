@@ -1,3 +1,2 @@
 ### UPDATE A LAUNCH
-PUT http://localhost:8000/launches
-Content-Type: application/json
+PUT http://localhost:8000/launches/106

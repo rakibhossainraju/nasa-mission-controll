@@ -5,7 +5,7 @@ Content-Type: application/json
 
 {
   "mission": "Kepler Exploration X",
-  "rocket": "WORLD",
-  "destination": "Kepler-442 a",
+  "rocket": "OLA",
+  "destination": "Earth",
   "launchDate": "March 20, 2030"
 }

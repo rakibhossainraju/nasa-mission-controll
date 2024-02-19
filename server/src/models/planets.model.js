@@ -47,6 +47,12 @@ async function savePlanet(planet) {
     console.error("Couldn't save a planet ", error);
   }
 }
+
 export async function getAllHabitablePlanets() {
   return planetsMongo.find({}, "keplerName -_id");
+}
+
+//Check if a planet exists or not / and also get the launch
+export async function existsPlanetWithName(planetName) {
+  return planetsMongo.findOne({ keplerName: planetName }, "keplerName -_id");
 }

@@ -2,13 +2,13 @@ import express from "express";
 import {
   httpAbortLaunch,
   httpGetAllLaunches,
-  httpPostNewLaunch,
+  httpAddNewLaunch,
 } from "./launches.controller.js";
 
 export const launchesRouter = express.Router();
 
 launchesRouter.get("/", httpGetAllLaunches);
 
-launchesRouter.post("/", httpPostNewLaunch);
+launchesRouter.post("/", httpAddNewLaunch);
 
-launchesRouter.delete("/:launchId", httpAbortLaunch);
+launchesRouter.put("/:launchId", httpAbortLaunch);

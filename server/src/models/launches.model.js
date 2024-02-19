@@ -1,43 +1,55 @@
-export const launches = new Map();
-let latestFlightNumber = 100;
-const launch = {
-  flightNumber: 100,
-  mission: "Kepler Exploration X",
-  rocket: "Explorer IS1",
-  launchDate: new Date("December 27, 2030"),
-  destination: "Kepler-442 b",
-  customer: ["Light", "NASA"],
-  upcoming: true,
-  success: true,
-};
-launches.set(launch.flightNumber, launch);
+import launchesMongo from "./launches.mongo.js";
 
-export function getAllLaunches() {
-  return Array.from(launches.values()).sort(
-    (a, b) => a.flightNumber - b.flightNumber,
+//Get All the planets
+export async function getAllLaunches() {
+  return launchesMongo.find({}, " -_id -__v -upsertedId");
+}
+
+//Add new launch
+export async function addNewLaunch(launch) {
+  return await saveLaunch(launch);
+}
+
+//Add a launch util f()
+async function saveLaunch(launch) {
+  try {
+    const latestFlightNumber = 100 + (await getAllLaunches()).length;
+    const newLaunch = {
+      ...launch,
+      flightNumber: latestFlightNumber,
+      upcoming: true,
+      success: true,
+      customers: ["Light", "NASA"],
+    };
+    await launchesMongo.updateOne(
+      { flightNumber: launch.flightNumber },
+      { ...newLaunch },
+      { upsert: true },
+    );
+    return newLaunch;
+  } catch (error) {
+    console.error(error);
+    return null;
+  }
+}
+
+//Check if a planet exists or not / and also get the launch
+export async function existsLaunchWithId(launchId) {
+  return launchesMongo.findOne(
+    { flightNumber: launchId },
+    " -_id -__v -upsertedId",
   );
 }
-
-export function addNewLaunch(launch) {
-  latestFlightNumber++;
-  const newLaunch = Object.assign(launch, {
-    flightNumber: latestFlightNumber,
-    upcoming: true,
-    success: true,
-    customer: ["Light", "NASA"],
-  });
-  launches.set(latestFlightNumber, newLaunch);
-  return newLaunch;
-}
-
-export function existsLaunchWIthId(launchId) {
-  return launches.has(launchId);
-}
-export function abortLaunch(launchId) {
-  const abortedLaunch = Object.assign(launches.get(launchId), {
-    upcoming: false,
-    success: false,
-  });
-  launches.set(launchId, abortedLaunch);
-  return abortedLaunch;
+export async function abortLaunch(launchId) {
+  const previousLaunch = await existsLaunchWithId(launchId);
+  try {
+    await launchesMongo.updateOne(
+      { flightNumber: launchId },
+      { upcoming: false, success: false },
+    );
+    return { ...previousLaunch._doc, upcoming: false, success: false };
+  } catch (error) {
+    console.log("Couldn't abort launch", error);
+    return null;
+  }
 }

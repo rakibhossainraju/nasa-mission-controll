@@ -17,7 +17,6 @@ export async function httpGetLaunches() {
     const res = await fetch(baseURL + "/launches");
     if (res.status !== 200) throw new Error("Fail to fetch Launches!");
     const data = await res.json();
-    console.log(data);
     return data.sort((a, b) => a.flightNumber - b.flightNumber);
   } catch (error) {
     console.log(error);
@@ -42,10 +41,9 @@ export async function httpSubmitLaunch(launch) {
 }
 
 export async function httpAbortLaunch(id) {
-  console.log(id);
   try {
     const res = await fetch(baseURL + "/launches/" + id, {
-      method: "DELETE",
+      method: "PUT",
     });
     const data = await res.json();
     if (res.status === 400) throw new Error(data.error);
