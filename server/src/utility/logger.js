@@ -1,8 +1,8 @@
 import chalk from "chalk";
 
-export const logSkyBlue = (message) => {
+export const logBlue = (message) => {
   if (process.env.NODE_ENV === "development") {
-    console.log(chalk.red(message));
+    console.log(chalk.blue(message));
   } else {
     console.log(message);
   }
