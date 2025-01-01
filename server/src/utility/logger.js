@@ -14,6 +14,6 @@ const createLoggerWithBackground = (color) => (message) => {
     console.log(message);
   }
 };
-export const logBlue = createLogger("blue");
 export const logYellow = createLogger("yellow");
+export const logBlue = createLoggerWithBackground("Blue");
 export const logMagenta = createLoggerWithBackground("Magenta");
