@@ -5,7 +5,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "watch": "nodemon --watch src --ext js,ts --exec 'deno fmt && node src/server.js'",
+    "watch": "nodemon --watch src --ext js,ts --exec 'deno fmt src/ && node src/server.js'",
     "start": "node src/server.js",
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "test-watch": "node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
