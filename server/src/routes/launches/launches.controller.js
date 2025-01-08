@@ -8,28 +8,34 @@ import {
 import { existsPlanetWithName } from "../../models/planets.model.js";
 
 export async function httpGetAllLaunches(req, res) {
-  return res.status(200).json(await getAllLaunches());
+  return res
+    .status(200)
+    .json(await getAllLaunches());
 }
 
 export async function httpAddNewLaunch(req, res) {
   const launch = req.body;
-  if (
-    !launch.mission ||
-    !launch.rocket ||
-    !launch.destination ||
-    !launch.launchDate
-  ) {
-    return res.status(400).json({ error: "Missing required field" });
+  const fieldNames = ["mission", "rocket", "destination", "launchDate"];
+  if (fieldNames.some((field) => !launch[field])) {
+    return res
+      .status(400)
+      .json({
+        error: `Missing required field ${
+          fieldNames.find((field) => !launch[field])
+        }`,
+      });
   }
 
   if (!(await existsPlanetWithName(launch.destination))) {
-    return res.status(400).json({ error: "Invade Planet Name" });
+    return res
+      .status(400)
+      .json({ error: "Invalid Planet Name" });
   }
 
   launch.launchDate = new Date(launch.launchDate);
 
   if (isNaN(launch.launchDate)) {
-    return res.status(400).json({ error: "Invade Date" });
+    return res.status(400).json({ error: "Invalid Date" });
   }
 
   const resLaunch = await addNewLaunch(launch);
@@ -42,7 +48,9 @@ export async function httpAbortLaunch(req, res) {
   const launchId = Number(req.params.launchId);
 
   if (!(await existsLaunchWithId(launchId))) {
-    return res.status(404).json({ error: "No launch found" });
+    return res
+      .status(404)
+      .json({ error: "No launch found" });
   }
 
   const abort = await abortLaunch(launchId);
@@ -55,10 +63,20 @@ export async function httpDeleteLaunch(req, res) {
   const flightNumber = Number(req.params.flightNumber);
 
   if (isNaN(flightNumber) || flightNumber < 1) {
-    return res.status(400).json({ error: "Invalid flight number" });
+    return res
+      .status(400)
+      .json({ error: "Invalid flight number" });
   }
 
   const { statusCode, ...response } = await deleteLaunch(flightNumber);
 
-  return res.status(statusCode).json(response);
+  return res
+    .status(statusCode)
+    .json(response);
+}
+
+export async function httpAbortLaunchDelete(req, res) {
+  return res
+    .status(405)
+    .json({ error: "Method not allowed" });
 }
