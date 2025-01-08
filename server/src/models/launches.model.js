@@ -40,6 +40,7 @@ export async function existsLaunchWithId(launchId) {
     " -_id -__v -upsertedId",
   );
 }
+
 export async function abortLaunch(launchId) {
   const previousLaunch = await existsLaunchWithId(launchId);
   try {
@@ -51,5 +52,35 @@ export async function abortLaunch(launchId) {
   } catch (error) {
     console.log("Couldn't abort launch", error);
     return null;
+  }
+}
+
+export async function deleteLaunch(flightNumber) {
+  if (flightNumber === undefined) {
+    return { statusCode: 400, error: "Invalid flight number provided" };
+  }
+
+  try {
+    const result = await launchesMongo.deleteOne({ flightNumber });
+
+    if (result.deletedCount === 0) {
+      return {
+        statusCode: 404,
+        error: "No mission found with the given flight number",
+        flightNumber,
+      };
+    }
+
+    return {
+      statusCode: 200,
+      message: "Mission was deleted successfully",
+      flightNumber,
+    };
+  } catch (error) {
+    console.error("Error while deleting mission:", error);
+    return {
+      statusCode: 500,
+      error: "An error occurred while trying to delete the mission",
+    };
   }
 }

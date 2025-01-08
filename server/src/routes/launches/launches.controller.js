@@ -1,6 +1,7 @@
 import {
   abortLaunch,
   addNewLaunch,
+  deleteLaunch,
   existsLaunchWithId,
   getAllLaunches,
 } from "../../models/launches.model.js";
@@ -48,4 +49,16 @@ export async function httpAbortLaunch(req, res) {
   return res
     .status(abort ? 200 : 400)
     .json(abort || { error: "Couldn't abort launch" });
+}
+
+export async function httpDeleteLaunch(req, res) {
+  const flightNumber = Number(req.params.flightNumber);
+
+  if (isNaN(flightNumber) || flightNumber < 1) {
+    return res.status(400).json({ error: "Invalid flight number" });
+  }
+
+  const { statusCode, ...response } = await deleteLaunch(flightNumber);
+
+  return res.status(statusCode).json(response);
 }
