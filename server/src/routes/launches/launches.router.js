@@ -1,6 +1,7 @@
 import express from "express";
 import {
   httpAbortLaunch,
+  httpAbortLaunchDelete,
   httpAddNewLaunch,
   httpDeleteLaunch,
   httpGetAllLaunches,
@@ -11,6 +12,8 @@ export const launchesRouter = express.Router();
 launchesRouter.get("/", httpGetAllLaunches);
 
 launchesRouter.post("/", httpAddNewLaunch);
+
+launchesRouter.delete("/", httpAbortLaunchDelete);
 
 launchesRouter.delete("/:flightNumber", httpDeleteLaunch);
 

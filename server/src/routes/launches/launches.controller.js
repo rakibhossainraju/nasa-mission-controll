@@ -75,7 +75,7 @@ export async function httpDeleteLaunch(req, res) {
     .json(response);
 }
 
-export async function httpAbortLaunchDelete(req, res) {
+export async function httpForbidLaunchDelete(req, res) {
   return res
     .status(405)
     .json({ error: "Method not allowed" });
