@@ -9,9 +9,12 @@ describe("Launches API", () => {
   afterAll(async () => {
     await disconnectMongoDb();
   });
+  let runSingleTest = false;
 
   describe("Test GET /launches", () => {
-    test("It should respond with 200 success", async () => {
+    if (runSingleTest) return;
+
+    test("should respond with 200 and return list of launches", async () => {
       await request(app)
         .get("/launches")
         .expect("Content-Type", /json/)
@@ -24,7 +27,9 @@ describe("Launches API", () => {
   let setFlightNumber;
   const flightNumberPromise = new Promise((res) => setFlightNumber = res);
 
-  describe("Test POST /launch", () => {
+  describe("Test POST /launches", () => {
+    if (runSingleTest) return;
+
     const completeLaunchData = {
       mission: "USS EnterPrise",
       rocket: "NCC 1901-D",
@@ -37,7 +42,7 @@ describe("Launches API", () => {
       destination: "Kepler-1652 b",
     };
 
-    test("It should respond 201 success", async () => {
+    test("should respond with 201 and create new launch with valid data", async () => {
       const response = await request(app)
         .post("/launches")
         .send(completeLaunchData)
@@ -52,46 +57,50 @@ describe("Launches API", () => {
       expect(response.body).toMatchObject(launchDataWithoutDate);
     });
 
-    test("It should catch missing required properties", async () => {
+    test("should respond with 400 when required launch properties are missing", async () => {
       const response = await request(app)
         .post("/launches")
         .send(launchDataWithoutDate)
         .expect("Content-Type", /json/)
         .expect(400);
 
-      expect(response.body).toStrictEqual({ error: "Missing required field" });
+      expect(response.body).toStrictEqual({
+        error: "Missing required field launchDate",
+      });
     });
 
-    test("It should catch Invalid dates", async () => {
+    test("should respond with 400 when destination planet is invalid", async () => {
       const response = await request(app)
         .post("/launches")
         .send({ ...completeLaunchData, destination: "earth" })
         .expect("Content-Type", /json/)
         .expect(400);
 
-      expect(response.body).toStrictEqual({ error: "Invade Planet Name" });
+      expect(response.body).toStrictEqual({ error: "Invalid Planet Name" });
     });
 
-    test("It should catch Invalid dates", async () => {
+    test("should respond with 400 when launch date is invalid", async () => {
       const response = await request(app)
         .post("/launches")
         .send({ ...launchDataWithoutDate, launchDate: "zoot" })
         .expect("Content-Type", /json/)
         .expect(400);
 
-      expect(response.body).toStrictEqual({ error: "Invade Date" });
+      expect(response.body).toStrictEqual({ error: "Invalid Date" });
     });
   });
 
   describe("Test PUT /launches", () => {
-    test("It should respond 200 success", async () => {
+    if (runSingleTest) return;
+
+    test("should respond with 200 when successfully updating an existing launch", async () => {
       const response = await request(app)
         .put("/launches/100")
         .expect("Content-Type", /json/)
         .expect(200);
     });
 
-    test("It shouldn't find any Launch respond with 404", async () => {
+    test("should respond with 404 when updating non-existent launch", async () => {
       const response = await request(app)
         .put("/launches/89")
         .expect("Content-Type", /json/)
@@ -101,11 +110,11 @@ describe("Launches API", () => {
     });
   });
 
-  describe("Test DELETE /launch", () => {
+  describe("Test DELETE /launches", () => {
+    test("should respond with 200 when successfully deleting an existing launch", async () => {
+      if (runSingleTest) return;
 
-    test("It should respond 200 success", async () => {
       const flightNumber = await flightNumberPromise;
-      console.error("FLIGHT NUMBER", flightNumber);
       const response = await request(app)
         .delete(`/launches/${flightNumber}`)
         .expect("Content-Type", /json/)
@@ -118,15 +127,42 @@ describe("Launches API", () => {
         });
     });
 
-    // test.each(['bad-request', '', -1, 0])
-    // ("It shouldn't find any launch respond with 400 bad request", async (invaledFLigtNumber) => {
-    //   const response = await request(app)
-    //     .delete(`/launches/${invaledFLigtNumber}`)
-    //     .expect("Content-Type", /json/)
-    //     .expect(400);
-    //
-    //   expect(response.body).toStrictEqual({ error: "Invalid flight number" });
-    // });
+    test.each(["bad-request", -1, 0])(
+      "should respond with 400 when flight number '%s' is invalid",
+      async (invalidFlightNumber) => {
+        const response = await request(app)
+          .delete(`/launches/${invalidFlightNumber}`)
+          .expect("Content-Type", /json/)
+          .expect(400);
 
+        expect(response.body).toStrictEqual({ error: "Invalid flight number" });
+      },
+    );
+
+    test("should respond with 404 when deleting non-existent launch", async () => {
+      const flightNumber = 1290213402934809;
+      const response = await request(app)
+        .delete(`/launches/${flightNumber}`)
+        .expect("Content-Type", /json/)
+        .expect(404);
+
+      expect(response.body)
+        .toStrictEqual({
+          error: "No mission found with the given flight number",
+          flightNumber,
+        });
+    });
+
+    test.each([""])(
+      "should respond with 403 when attempting to delete with forbidden parameters",
+      async (forBiddenParams) => {
+        const response = await request(app)
+          .delete(`/launches/${forBiddenParams}`)
+          .expect("Content-Type", /json/)
+          .expect(405);
+
+        expect(response.body).toStrictEqual({ error: "Method not allowed" });
+      },
+    );
   });
 });

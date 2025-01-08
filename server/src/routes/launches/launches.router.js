@@ -1,7 +1,7 @@
 import express from "express";
 import {
   httpAbortLaunch,
-  httpAbortLaunchDelete,
+  httpForbidLaunchDelete,
   httpAddNewLaunch,
   httpDeleteLaunch,
   httpGetAllLaunches,
@@ -13,7 +13,7 @@ launchesRouter.get("/", httpGetAllLaunches);
 
 launchesRouter.post("/", httpAddNewLaunch);
 
-launchesRouter.delete("/", httpAbortLaunchDelete);
+launchesRouter.delete("/", httpForbidLaunchDelete);
 
 launchesRouter.delete("/:flightNumber", httpDeleteLaunch);
 
