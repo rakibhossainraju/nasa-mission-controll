@@ -1,2 +1,2 @@
 #### GET A LAUNCH
-GET localhost:8000/launches
+GET localhost:8000/v1/planets/

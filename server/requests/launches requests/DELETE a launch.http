@@ -1,2 +1,2 @@
 #### DELETE A LAUNCH
-DELETE http://localhost:8000/launches/102
+DELETE http://localhost:8000/v1/launches/

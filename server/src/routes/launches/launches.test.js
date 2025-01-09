@@ -16,7 +16,7 @@ describe("Launches API", () => {
 
     test("should respond with 200 and return list of launches", async () => {
       await request(app)
-        .get("/launches")
+        .get("/v1/launches")
         .expect("Content-Type", /json/)
         .expect(200);
     });
@@ -44,7 +44,7 @@ describe("Launches API", () => {
 
     test("should respond with 201 and create new launch with valid data", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post("/v1/launches")
         .send(completeLaunchData)
         .expect("Content-Type", /json/)
         .expect(201);
@@ -59,7 +59,7 @@ describe("Launches API", () => {
 
     test("should respond with 400 when required launch properties are missing", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post("/v1/launches")
         .send(launchDataWithoutDate)
         .expect("Content-Type", /json/)
         .expect(400);
@@ -71,7 +71,7 @@ describe("Launches API", () => {
 
     test("should respond with 400 when destination planet is invalid", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post("/v1/launches")
         .send({ ...completeLaunchData, destination: "earth" })
         .expect("Content-Type", /json/)
         .expect(400);
@@ -81,7 +81,7 @@ describe("Launches API", () => {
 
     test("should respond with 400 when launch date is invalid", async () => {
       const response = await request(app)
-        .post("/launches")
+        .post("/v1/launches")
         .send({ ...launchDataWithoutDate, launchDate: "zoot" })
         .expect("Content-Type", /json/)
         .expect(400);
@@ -95,14 +95,14 @@ describe("Launches API", () => {
 
     test("should respond with 200 when successfully updating an existing launch", async () => {
       const response = await request(app)
-        .put("/launches/100")
+        .put("/v1/launches/100")
         .expect("Content-Type", /json/)
         .expect(200);
     });
 
     test("should respond with 404 when updating non-existent launch", async () => {
       const response = await request(app)
-        .put("/launches/89")
+        .put("/v1/launches/89")
         .expect("Content-Type", /json/)
         .expect(404);
 
@@ -116,7 +116,7 @@ describe("Launches API", () => {
 
       const flightNumber = await flightNumberPromise;
       const response = await request(app)
-        .delete(`/launches/${flightNumber}`)
+        .delete(`/v1/launches/${flightNumber}`)
         .expect("Content-Type", /json/)
         .expect(200);
 
@@ -131,7 +131,7 @@ describe("Launches API", () => {
       "should respond with 400 when flight number '%s' is invalid",
       async (invalidFlightNumber) => {
         const response = await request(app)
-          .delete(`/launches/${invalidFlightNumber}`)
+          .delete(`/v1/launches/${invalidFlightNumber}`)
           .expect("Content-Type", /json/)
           .expect(400);
 
@@ -142,7 +142,7 @@ describe("Launches API", () => {
     test("should respond with 404 when deleting non-existent launch", async () => {
       const flightNumber = 1290213402934809;
       const response = await request(app)
-        .delete(`/launches/${flightNumber}`)
+        .delete(`/v1/launches/${flightNumber}`)
         .expect("Content-Type", /json/)
         .expect(404);
 
@@ -157,7 +157,7 @@ describe("Launches API", () => {
       "should respond with 403 when attempting to delete with forbidden parameters",
       async (forBiddenParams) => {
         const response = await request(app)
-          .delete(`/launches/${forBiddenParams}`)
+          .delete(`/v1/launches/${forBiddenParams}`)
           .expect("Content-Type", /json/)
           .expect(405);
 

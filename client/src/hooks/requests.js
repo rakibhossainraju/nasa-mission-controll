@@ -1,6 +1,5 @@
-import { createSounds } from "arwes";
 
-const baseURL = "http://localhost:8000";
+const baseURL = "http://localhost:8000/v1";
 
 export async function httpGetPlanets() {
   try {

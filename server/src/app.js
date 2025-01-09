@@ -1,10 +1,9 @@
 import cors from "cors";
 import express from "express";
-import { planetsRouter } from "./routes/planets/planets.router.js";
 import * as path from "path";
 // import morgan from "morgan";
 import fileDirName from "./utility/file-dir-name.utils.js";
-import { launchesRouter } from "./routes/launches/launches.router.js";
+import api from "./routes/api.js";
 
 export const app = express();
 const { __dirname } = fileDirName(import.meta.url);
@@ -18,8 +17,8 @@ app.use(
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "..", "public")));
 
-app.use("/planets", planetsRouter);
-app.use("/launches", launchesRouter);
+// Version 1 of the API
+app.use("/v1", api);
 
 app.get(
   "/*",

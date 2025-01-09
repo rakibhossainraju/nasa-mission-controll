@@ -1,6 +1,6 @@
 #### POST A LAUNCH
 
-POST http://localhost:8000/launches
+POST http://localhost:8000/v1/launches
 Content-Type: application/json
 
 {
