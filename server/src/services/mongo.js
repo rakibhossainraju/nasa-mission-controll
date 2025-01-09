@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import { logBlue } from "../utility/logger.js";
 
-//  ! You have to manually add the connection string while running the test.
 const MONGO_DB_CONNECTION_STRING = process.env.MONGO_DB_CONNECTION_STRING;
 
 mongoose.connection.once("open", () => {
