@@ -5,7 +5,6 @@ import {
   existsLaunchWithId,
   getAllLaunches,
 } from "../../models/launches.model.js";
-import { existsPlanetWithName } from "../../models/planets.model.js";
 
 export async function httpGetAllLaunches(req, res) {
   return res
@@ -15,33 +14,13 @@ export async function httpGetAllLaunches(req, res) {
 
 export async function httpAddNewLaunch(req, res) {
   const launch = req.body;
-  const fieldNames = ["mission", "rocket", "destination", "launchDate"];
-  if (fieldNames.some((field) => !launch[field])) {
-    return res
-      .status(400)
-      .json({
-        error: `Missing required field ${
-          fieldNames.find((field) => !launch[field])
-        }`,
-      });
+
+  try {
+    const resLaunch = await addNewLaunch(launch);
+    return res.status(201).json(resLaunch);
+  } catch (error) {
+    return res.status(400).json({ error: error.message });
   }
-
-  if (!(await existsPlanetWithName(launch.destination))) {
-    return res
-      .status(400)
-      .json({ error: "Invalid Planet Name" });
-  }
-
-  launch.launchDate = new Date(launch.launchDate);
-
-  if (isNaN(launch.launchDate)) {
-    return res.status(400).json({ error: "Invalid Date" });
-  }
-
-  const resLaunch = await addNewLaunch(launch);
-  return res
-    .status(resLaunch ? 201 : 400)
-    .json(resLaunch || { error: "Couldn't create Launch" });
 }
 
 export async function httpAbortLaunch(req, res) {
