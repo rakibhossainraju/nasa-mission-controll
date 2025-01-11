@@ -47,7 +47,19 @@ async function saveLaunch(launch) {
 
 async function saveLaunches(launches) {
   try {
-    await launchesDatabase.insertMany(launches);
+    const bulkOperations = launches.map((launch) => ({
+      updateOne: {
+        filter: { flightNumber: launch.flightNumber },
+        update: { $set: launch },
+        upsert: true,
+      },
+    }));
+
+    const result = await launchesDatabase.bulkWrite(bulkOperations);
+    console.log(
+      `Matched: ${result.matchedCount}, Modified: ${result.modifiedCount}, Upserted: ${result.upsertedCount}`,
+    );
+
     return launches;
   } catch (error) {
     console.error(error);
