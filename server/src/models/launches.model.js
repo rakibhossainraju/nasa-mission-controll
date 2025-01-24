@@ -3,8 +3,12 @@ import launchesDatabase from "./launches.mongo.js";
 import { existsPlanetWithName } from "./planets.model.js";
 
 //Get All the planets
-export async function getAllLaunches() {
-  return launchesDatabase.find({}, " -_id -__v -upsertedId");
+export async function getAllLaunches({ skip, limit }) {
+  return launchesDatabase
+    .find({}, " -_id -__v -upsertedId")
+    .sort({ flightNumber: 1 })
+    .skip(skip)
+    .limit(limit);
 }
 
 //Add new launch
@@ -183,10 +187,10 @@ async function populateLaunches() {
         upcoming: launchDoc["upcoming"],
         success: launchDoc["success"] ?? false,
       };
+
       const payloads = launchDoc["payloads"];
-      const customers = payloads.flatMap((payload) => {
-        return payload["customers"];
-      });
+      const customers = payloads.flatMap((payload) => payload["customers"]);
+
       launch["customers"] = customers;
       launches.push(launch);
     }

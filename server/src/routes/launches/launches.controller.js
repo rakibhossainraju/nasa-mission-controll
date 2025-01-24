@@ -5,11 +5,15 @@ import {
   existsLaunchWithId,
   getAllLaunches,
 } from "../../models/launches.model.js";
+import { getPagination } from "../../services/query.js";
 
 export async function httpGetAllLaunches(req, res) {
+  const paginate = getPagination(req.query);
+  const launches = await getAllLaunches(paginate);
+
   return res
     .status(200)
-    .json(await getAllLaunches());
+    .json(launches);
 }
 
 export async function httpAddNewLaunch(req, res) {
